@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Caching.Distributed;
+using MultiTenantAadAuthAspNetCore.Services;
 
 namespace MultiTenantAadAuthAspNetCore
 {
@@ -71,7 +73,10 @@ namespace MultiTenantAadAuthAspNetCore
         private async Task OnAuthCodeReceivedAsync(AuthorizationCodeReceivedContext context)
         {
             string userId = context.Principal.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-            var cache = new TokenCache();
+
+            var distributedCache = context.HttpContext.RequestServices.GetService<IDistributedCache>();
+            var cache = new AdalDistributedTokenCache(distributedCache, userId);
+
             var authContext = new AuthenticationContext(String.Format(Configuration["AzureAD:Authority"], "common"), cache);
             var result = await authContext.AcquireTokenByAuthorizationCodeAsync(context.ProtocolMessage.Code, new Uri(Configuration["AzureAD:RedirectUri"]), new ClientCredential(Configuration["AzureAD:ClientId"], Configuration["AzureAD:ClientSecret"]), Configuration["AzureAD:VstsResourceId"]);
 
