@@ -54,6 +54,11 @@ namespace MultiTenantAadAuthAspNetCore
                     ValidateIssuer = false
                 };
             });
+
+            services.AddDistributedRedisCache(options =>
+            {
+                options.Configuration = Configuration["Redis:ConnectionString"];
+            });
         }
 
         private Task OnRemoteFailed(RemoteFailureContext context)
