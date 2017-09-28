@@ -5,8 +5,7 @@
 }
 
 <div class="row" style="margin:20px">
-    <div class="col-md-5"></div>
-    <div class="col-md-2">
+    <div class="col-md-7">
         @if (!User.Identity.IsAuthenticated)
         {
             <a class="btn btn-primary" asp-controller="Account" asp-action="SignIn">AAD Sign In</a>
@@ -14,6 +13,10 @@
         else
         {
             <div>hello @User.Identity.Name</div>
+            <div>
+                <p>AccessToken:-</p>
+                <p>@ViewData["AccessToken"]</p>
+            </div>
         }
     </div>
     <div class="col-md-5"></div>
